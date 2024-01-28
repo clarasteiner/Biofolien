@@ -1,4 +1,3 @@
-
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,8 +10,16 @@ d = []
 
 flaeche = 30 * 0.06
 laenge = 70
-linear = 4
 c = []
+
+
+def derivatives(function):
+    score_derivatives = []
+    for i in range(len(function) - 1):
+        first_derivative = function[i + 1] - function[i]
+        score_derivatives.append(first_derivative)
+    return score_derivatives
+
 
 with open("Andere Folien\Frischhalte 1.csv", "r") as csvfile:
     csv_file_reader = csv.reader(csvfile, delimiter=";")
@@ -23,20 +30,27 @@ with open("Andere Folien\Frischhalte 1.csv", "r") as csvfile:
         b = float(row[2].replace(",", "."))
         d.append((b - start) / laenge)
 
+    derivative = derivatives(f)
+    min_value = np.argmin(derivative)
+    print(min_value)
 
-x = np.array(d[:62]).reshape((-1, 1))
-y = np.array(f[:62])
-model = LinearRegression()
-model.fit(x, y)
-model = LinearRegression().fit(x, y)
-r_sq = model.score(x, y)
-print(f"coefficient of determination: {r_sq}")
-new_model = LinearRegression().fit(x, y.reshape((-1, 1)))
-print(f"intercept: {new_model.intercept_}")
-print(f"slope: {new_model.coef_}")
+l = []
+c = []
+for n in range(min_value-10):
+    x = np.array(d[:n+10]).reshape((-1, 1))
+    y = np.array(f[:n+10])
+    model = LinearRegression()
+    model.fit(x, y)
+    model = LinearRegression().fit(x, y)
+    l.append(model.score(x, y))
+    new_model = LinearRegression().fit(x, y.reshape((-1, 1)))
+    c.append([ new_model.intercept_, new_model.coef_])
 
-x = [0, d[62]]
-y = [new_model.intercept_, model.intercept_ + model.coef_ * d[62]]
+a = l.index(max(l))
+print("Elastizitätsmodul:", c[a][1] )
+
+x = [0, d[a]]
+y = [c[a][0], c[a][0] + c[a][1] * d[a]]
 
 plt.plot(d, f)
 plt.plot(x, y)
