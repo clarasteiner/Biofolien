@@ -10,8 +10,6 @@ d = []
 
 flaeche = 30 * 0.06
 laenge = 70
-c = []
-
 
 def derivatives(function):
     score_derivatives = []
